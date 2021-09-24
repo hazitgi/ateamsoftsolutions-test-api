@@ -8,6 +8,8 @@ const cors = require("cors");
 const db = require("./config/db");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const path = require("path");
+
 
 // routes
 const admin = require("./routes/admin");
@@ -21,9 +23,11 @@ db.connect((err) => {
   }
 });
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
+
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
