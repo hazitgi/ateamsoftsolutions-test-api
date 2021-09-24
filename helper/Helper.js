@@ -129,7 +129,6 @@ module.exports = {
       price: parseInt(data.price),
       color: data.color,
     };
-    console.log("data", data);
     return new Promise((resolve, reject) => {
       db.get()
         .collection(collection.VEGITABLE_COLLECTION)
@@ -137,6 +136,18 @@ module.exports = {
         .then((response) => {
           resolve();
         });
+    });
+  },
+
+  // get all vegitable
+  getAllVegitables: () => {
+    return new Promise(async (resolve, reject) => {
+      let vegitables = await db
+        .get()
+        .collection(collection.VEGITABLE_COLLECTION)
+        .find()
+        .toArray();
+      resolve(vegitables);
     });
   },
 
@@ -155,6 +166,35 @@ module.exports = {
     });
   },
 
+  // update vegitable info
+  updateVegitable: ({ vegID, data }) => {
+    return new Promise(async (resolve, reject) => {
+      db.get()
+        .collection(collection.VEGITABLE_COLLECTION)
+        .updateOne(
+          { _id: ObjectID(vegID) },
+          {
+            $set: {
+              name: data.name,
+              price: parseInt(data.price),
+              color: data.color,
+            },
+          }
+        )
+        .then(async (data) => {
+          let veg = await db
+            .get()
+            .collection(collection.VEGITABLE_COLLECTION)
+            .findOne({ _id: ObjectID(vegID) });
+          if (veg) {
+            resolve(veg);
+          } else {
+            reject();
+          }
+        });
+    });
+  },
+
   // delete vegitabl
   deleteSingleVegitable: (vegID) => {
     return new Promise((resolve, reject) => {
@@ -162,22 +202,29 @@ module.exports = {
         .collection(collection.VEGITABLE_COLLECTION)
         .deleteOne({ _id: ObjectID(vegID) })
         .then((response) => {
-          console.log(response);
+          if (response.deletedCount) {
+            resolve();
+          } else {
+            reject();
+          }
         });
     });
   },
 
-  // getSingleUser: (userID) => {
-  //   return new Promise(async (resolve, reject) => {
-  //     let userInfo = await db
-  //       .get()
-  //       .collection(collection.USER_COLLECTION)
-  //       .findOne({ _id: ObjectID(userID) });
-  //     if (userInfo) {
-  //       resolve(userInfo);
-  //     } else {
-  //       reject();
-  //     }
-  //   });
-  // },
+  // user info
+  getUserInfo: ({ page, limit }) => {
+    const skipIndex = (page - 1) * limit;
+    return new Promise(async (resolve, reject) => {
+      db.get()
+        .collection(collection.USER_COLLECTION)
+        .find()
+        .sort({ firstName: 1, lastName: 1, userType: 1 })
+        .skip(skipIndex)
+        .limit(limit)
+        .toArray()
+        .then((result) => {
+          resolve(result);
+        });
+    });
+  },
 };

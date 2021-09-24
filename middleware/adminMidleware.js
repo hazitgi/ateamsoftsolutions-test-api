@@ -2,8 +2,6 @@ const isColor = require("is-color");
 
 module.exports = {
   validateVegitable: (req, res, next) => {
-    console.log(req.body);
-    console.log();
     if (req.body.color && req.body.price && req.body.name) {
       if (isColor(req.body.color) && !isNaN(req.body.price)) {
         next();
