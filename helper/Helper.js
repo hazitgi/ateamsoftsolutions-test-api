@@ -237,9 +237,14 @@ module.exports = {
       let userInfo = await db
         .get()
         .collection(collection.USER_COLLECTION)
-        .find({ $text: { $search: `${data}` } }).toArray()
-      console.log(userInfo);
-      resolve(userInfo);
+        .find({ $text: { $search: `${data}` } })
+        .toArray();
+      // console.log(userInfo);
+      if (userInfo) {
+        resolve(userInfo);
+      } else {
+        reject();
+      }
     });
   },
 };

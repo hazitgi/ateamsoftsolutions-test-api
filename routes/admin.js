@@ -167,9 +167,14 @@ router.get("/user-info", async (req, res) => {
 
 router.get(`/search/:data`, (req, res) => {
   console.log(req.params.data);
-  adminHelper.searchData(req.params.data).then((response) => {
-    res.status(200).json({ status: true, body: response });
-  });
+  adminHelper
+    .searchData(req.params.data)
+    .then((response) => {
+      res.status(200).json({ status: true, body: response });
+    })
+    .catch(() => {
+      res.status(404).json({ status: false, body: `data not found` });
+    });
 });
 
 // add vegitable
