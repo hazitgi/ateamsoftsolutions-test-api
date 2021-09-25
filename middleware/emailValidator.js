@@ -3,6 +3,7 @@ const path = require("path");
 
 module.exports.mailValidate = (req, res, callback) => {
 
+  
   let email = req.body.email.split("@");
   let mails = fs
     .readFileSync(path.join(__dirname, "mail.txt"), { encoding: "utf-8" })

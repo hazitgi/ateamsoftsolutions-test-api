@@ -62,6 +62,17 @@ module.exports = {
     });
   },
 
+  // get single user by email
+  getUserByEmail: (email) => {
+    return new Promise(async (resolve, reject) => {
+      let userInfo = await db
+        .get()
+        .collection(collection.USER_COLLECTION)
+        .findOne({ email: email });
+      resolve(userInfo);
+    });
+  },
+
   // update user profile
   updateProfile: ({ profilePicture, userID }) => {
     console.log(userID);
@@ -247,4 +258,6 @@ module.exports = {
       }
     });
   },
+
+
 };

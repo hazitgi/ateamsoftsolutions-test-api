@@ -11,13 +11,66 @@ const fs = require("fs");
 const { validateVegitable } = require("../middleware/adminMidleware");
 
 // mail validator
-const { mailValidate } = require("../middleware/emailValidator");
+
+const { verifyToken } = require("../config/token");
+
 const { resolve } = require("path");
+const { validateRegisterInput } = require("../Validation/validation");
+
+
+
+
+// login
+router.post("/login", async (req, res) => {
+  const isValid = await validateRegisterInput(req.body);
+
+  const email = req.body.email;
+  const password = req.body.password;
+  // console.log(isValid);
+  // console.log(req.body);
+
+  if (isValid == "valid") {
+    let user = await adminHelper.getUserByEmail(email);
+    // console.log(user);
+    if (!user) {
+      console.log(`no user`);
+      return res.status(404).json({ success: true, status: `User not found` });
+    }
+
+    bcrypt.compare(password, user.password).then((isMatch) => {
+      if (isMatch) {
+        console.log("password ok");
+        // user matched
+        // create JWT payload
+        const payload = {
+          id: user._id,
+          name: user.firstName,
+        };
+
+        // sign token
+        jwt.sign(payload, "secret", { expiresIn: 3600000 }, (err, token) => {
+          res.json({
+            success: true,
+            status: `Login was a success`,
+            token: `Bearer ${token}`,
+          });
+        });
+      } else {
+        console.log("err");
+        return res
+          .status(400)
+          .json({ status: false, body: `password incorrect` });
+      }
+    });
+  } else {
+    res.status(400).json({ success: false, body: isValid });
+  }
+});
 
 
 
 // add vegitable
-router.post(`/add-vegitable`, validateVegitable, (req, res) => {
+router.post(`/add-vegitable`,  validateVegitable, (req, res) => {
   adminHelper.addVegitable(req.body).then((response) => {
     res.status(200).json({ status: true, body: `data inserted to db` });
   });

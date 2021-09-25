@@ -9,7 +9,7 @@ const db = require("./config/db");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-
+const passport = require("passport");
 
 // routes
 const admin = require("./routes/admin");
@@ -28,11 +28,16 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
   app.use(cors());
 }
+
+// passport middleware
+app.use(passport.initialize());
+
+// passport config
+require("./config/passport-local")(passport);
 
 app.use("/api/v1/admin", admin);
 app.use("/api/v1/manager", manager);
