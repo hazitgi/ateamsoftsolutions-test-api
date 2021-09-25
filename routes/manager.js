@@ -14,19 +14,6 @@ const { validateVegitable } = require("../middleware/adminMidleware");
 const { mailValidate } = require("../middleware/emailValidator");
 const { resolve } = require("path");
 
-//  multer storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./public/profile/");
-  },
-  filename: function (req, file, cb) {
-    let profile = file.originalname.split(".");
-    let extension = profile[profile.length - 1];
-    cb(null, `${uuid.v4()}.${extension}`);
-  },
-});
-
-const upload = multer({ storage: storage });
 
 
 // add vegitable

@@ -165,6 +165,13 @@ router.get("/user-info", async (req, res) => {
   res.json({ status: true, body: result });
 });
 
+router.get(`/search/:data`, (req, res) => {
+  console.log(req.params.data);
+  adminHelper.searchData(req.params.data).then((response) => {
+    res.status(200).json({ status: true, body: response });
+  });
+});
+
 // add vegitable
 router.post(`/add-vegitable`, validateVegitable, (req, res) => {
   adminHelper.addVegitable(req.body).then((response) => {

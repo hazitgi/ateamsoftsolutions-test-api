@@ -217,7 +217,8 @@ module.exports = {
     return new Promise(async (resolve, reject) => {
       db.get()
         .collection(collection.USER_COLLECTION)
-        .find({}, { profilePicture: 0 })
+        .find({})
+        .project({ profilePicture: 0 })
         .sort({ firstName: 1, lastName: 1, userType: 1 })
         .skip(skipIndex)
         .limit(limit)
@@ -226,6 +227,19 @@ module.exports = {
           console.log(result);
           resolve(result);
         });
+    });
+  },
+
+  // search user info
+  searchData: (data) => {
+    console.log(`sdf`);
+    return new Promise(async (resolve, reject) => {
+      let userInfo = await db
+        .get()
+        .collection(collection.USER_COLLECTION)
+        .find({ $text: { $search: `${data}` } }).toArray()
+      console.log(userInfo);
+      resolve(userInfo);
     });
   },
 };
