@@ -162,7 +162,7 @@ router.delete(`/delete-user/:userID`, async (req, res) => {
 });
 
 // user info pagination
-router.get("/user-info", async (req, res) => {
+router.get("/user-info", verifyToken, async (req, res) => {
   const page = parseInt(req.query.page);
   const limit = parseInt(req.query.limit);
   console.log(page, limit);
@@ -170,7 +170,7 @@ router.get("/user-info", async (req, res) => {
   res.json({ status: true, body: result });
 });
 
-router.get(`/search/:data`, (req, res) => {
+router.get(`/search/:data`, verifyToken, (req, res) => {
   console.log(req.params.data);
   adminHelper
     .searchData(req.params.data)
@@ -183,14 +183,14 @@ router.get(`/search/:data`, (req, res) => {
 });
 
 // add vegitable
-router.post(`/add-vegitable`, validateVegitable, (req, res) => {
+router.post(`/add-vegitable`, verifyToken, validateVegitable, (req, res) => {
   adminHelper.addVegitable(req.body).then((response) => {
     res.status(200).json({ status: true, body: `data inserted to db` });
   });
 });
 
 // get all vegiables
-router.get("/vegitables", (req, res) => {
+router.get("/vegitables", verifyToken, (req, res) => {
   adminHelper.getAllVegitables().then((response) => {
     console.log(response);
     res.status(200).json({ status: true, body: response });
@@ -198,7 +198,7 @@ router.get("/vegitables", (req, res) => {
 });
 
 // get single vegitable
-router.get("/get-vegitable/:vegID", async (req, res) => {
+router.get("/get-vegitable/:vegID", verifyToken, async (req, res) => {
   adminHelper
     .getSingleVegitable(req.params.vegID)
     .then((response) => {
@@ -210,23 +210,28 @@ router.get("/get-vegitable/:vegID", async (req, res) => {
 });
 
 // update vegitable info
-router.patch(`/update-vegitable/:vegID`, validateVegitable, (req, res) => {
-  let data = req.body;
-  let vegID = req.params.vegID;
-  adminHelper
-    .updateVegitable({ vegID, data })
-    .then((response) => {
-      if (response) {
-        res.status(200).json({ status: true, body: response });
-      }
-    })
-    .catch(() => {
-      res.status(400).json({ status: false, body: `vegitable id not match` });
-    });
-});
+router.patch(
+  `/update-vegitable/:vegID`,
+  verifyToken,
+  validateVegitable,
+  (req, res) => {
+    let data = req.body;
+    let vegID = req.params.vegID;
+    adminHelper
+      .updateVegitable({ vegID, data })
+      .then((response) => {
+        if (response) {
+          res.status(200).json({ status: true, body: response });
+        }
+      })
+      .catch(() => {
+        res.status(400).json({ status: false, body: `vegitable id not match` });
+      });
+  }
+);
 
 // delete
-router.delete("/delete-vegitable/:vegID", (req, res) => {
+router.delete("/delete-vegitable/:vegID", verifyToken, (req, res) => {
   adminHelper
     .deleteSingleVegitable(req.params.vegID)
     .then((response) => {

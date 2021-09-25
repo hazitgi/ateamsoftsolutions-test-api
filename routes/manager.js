@@ -17,9 +17,6 @@ const { verifyToken } = require("../config/token");
 const { resolve } = require("path");
 const { validateRegisterInput } = require("../Validation/validation");
 
-
-
-
 // login
 router.post("/login", async (req, res) => {
   const isValid = await validateRegisterInput(req.body);
@@ -67,17 +64,15 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
-
 // add vegitable
-router.post(`/add-vegitable`,  validateVegitable, (req, res) => {
+router.post(`/add-vegitable`, verifyToken, validateVegitable, (req, res) => {
   adminHelper.addVegitable(req.body).then((response) => {
     res.status(200).json({ status: true, body: `data inserted to db` });
   });
 });
 
 // get all vegiables
-router.get("/vegitables", (req, res) => {
+router.get("/vegitables", verifyToken, (req, res) => {
   adminHelper.getAllVegitables().then((response) => {
     console.log(response);
     res.status(200).json({ status: true, body: response });
@@ -85,7 +80,7 @@ router.get("/vegitables", (req, res) => {
 });
 
 // get single vegitable
-router.get("/get-vegitable/:vegID", async (req, res) => {
+router.get("/get-vegitable/:vegID", verifyToken, async (req, res) => {
   adminHelper
     .getSingleVegitable(req.params.vegID)
     .then((response) => {
@@ -97,23 +92,28 @@ router.get("/get-vegitable/:vegID", async (req, res) => {
 });
 
 // update vegitable info
-router.patch(`/update-vegitable/:vegID`, validateVegitable, (req, res) => {
-  let data = req.body;
-  let vegID = req.params.vegID;
-  adminHelper
-    .updateVegitable({ vegID, data })
-    .then((response) => {
-      if (response) {
-        res.status(200).json({ status: true, body: response });
-      }
-    })
-    .catch(() => {
-      res.status(400).json({status:false, body:`vegitable id not match`})
-    });
-});
+router.patch(
+  `/update-vegitable/:vegID`,
+  verifyToken,
+  validateVegitable,
+  (req, res) => {
+    let data = req.body;
+    let vegID = req.params.vegID;
+    adminHelper
+      .updateVegitable({ vegID, data })
+      .then((response) => {
+        if (response) {
+          res.status(200).json({ status: true, body: response });
+        }
+      })
+      .catch(() => {
+        res.status(400).json({ status: false, body: `vegitable id not match` });
+      });
+  }
+);
 
 // delete
-router.delete("/delete-vegitable/:vegID", (req, res) => {
+router.delete("/delete-vegitable/:vegID", verifyToken, (req, res) => {
   adminHelper
     .deleteSingleVegitable(req.params.vegID)
     .then((response) => {
@@ -128,4 +128,3 @@ router.delete("/delete-vegitable/:vegID", (req, res) => {
 });
 
 module.exports = router;
-
